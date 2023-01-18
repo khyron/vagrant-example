@@ -1,0 +1,12 @@
+---
+- hosts: server-dbs
+  become: yes
+  tasks:
+    - name: mysql install
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+      -  python-selinux
+      -  mysql-server
+      -  python-mysqldb  

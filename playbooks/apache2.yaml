@@ -1,0 +1,22 @@
+---
+- hosts: server-webs
+  become: yes
+  tasks:
+    - name: apache2 install
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+      -  apache2
+      -  apache2-utils
+    
+    - name: enable apache modules
+      ansible.builtin.file: 
+        src: /etc/apache2/mods-available/rewrite.load
+        dest: /etc/apache2/mods-enabled/rewrite.load
+        state: link
+
+    - name: restart apache
+      ansible.builtin.service:
+        name: apache2
+        state: restarted

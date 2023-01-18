@@ -1,0 +1,15 @@
+---
+- hosts: server-lbs
+  become: yes
+  tasks:
+    - name: haproxy install
+      ansible.builtin.apt:
+        name: haproxy
+        state: present
+    
+    - name: check if haproxy is enabled
+      lineinfile: 
+        dest: /etc/default/haproxy
+        regexp: "^ENABLED.+$"
+        line: "ENABLED=1"
+        state: present

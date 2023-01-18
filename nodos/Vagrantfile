@@ -1,0 +1,47 @@
+# -- mode: ruby --
+# vi: set ft=ruby :
+
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+  config.vm.define "nodo-lb" do |nodolb|
+    nodolb.vm.box = "bento/ubuntu-16.04"
+    nodolb.vm.network "private_network", ip: "192.168.56.11"
+    nodolb.vm.hostname = "nodo-lb"
+    nodolb.vm.provision "shell", path: "bootstrap.sh"
+    nodolb.vm.provider "virtualbox" do |v|
+      v.memory = 512
+      v.cpus = 1
+    end
+  end
+   config.vm.define "nodo-web-uno" do |nodowebuno|
+    nodowebuno.vm.box = "bento/ubuntu-16.04"
+    nodowebuno.vm.network "private_network", ip: "192.168.56.12"
+    nodowebuno.vm.hostname = "nodo-web-uno"
+    nodowebuno.vm.provision "shell", path: "bootstrap.sh"    
+    nodowebuno.vm.provider "virtualbox" do |v|
+     v.memory = 512
+     v.cpus = 1
+    end
+  end
+  config.vm.define "nodo-web-dos" do |nodowebdos|
+    nodowebdos.vm.box = "bento/ubuntu-16.04"
+    nodowebdos.vm.network "private_network", ip: "192.168.56.13"
+    nodowebdos.vm.hostname = "nodo-web-dos"
+    nodowebdos.vm.provision "shell", path: "bootstrap.sh"    
+    nodowebdos.vm.provider "virtualbox" do |v|
+      v.memory = 512
+      v.cpus = 1
+    end
+  end
+  config.vm.define "nodo-db" do |nododb|
+    nododb.vm.box = "bento/ubuntu-16.04"
+    nododb.vm.network "private_network", ip: "192.168.56.14"
+    nododb.vm.hostname = "nodo-db"
+    nododb.vm.provision "shell", path: "bootstrap.sh"    
+    nododb.vm.provider "virtualbox" do |v|
+      v.memory = 512
+      v.cpus = 1
+    end
+  end
+end	  

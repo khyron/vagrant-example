@@ -1,0 +1,63 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+
+    - name: Copy file to web nodes
+      ansible.builtin.copy:
+        src: /home/vagrant/playbooks/members.txt
+        dest: /home/vagrant/
+      when: inventory_hostname in groups['server-webs']
+
+    - name: list files
+      ansible.buitlin.shell: ls -la /home/vagrant/*.txt
+      register: listfiles
+      when: inventory_hostname in groups['server-webs']
+
+    - name: show files
+      ansible.builtin.debug:
+        msg: "{{ listfiles.stdout_lines |list }}"
+    
+    - name: check db status
+      ansible.builtin.ping:
+      when: inventory_hostname in groups['server-dbs']
+
+    - name: Make sure mysql is started and enabled
+      ansible.builtin.systemd:
+        name: mysqld
+        state: started
+        enabled: true
+      when: inventory_hostname in groups['server-dbs']  
+
+    - name: ntpdate client install
+      ansible.builtin.apt:
+        name: ntpdate
+        state: present
+
+    - name: sync date time
+      ansible.builtin.shell: ntpdate 0.us.pool.ntp.org
+      register: ntptime
+
+    - name: servers time
+      ansible.builtin.debug:
+        msg: "{{ ntptime }}"
+    
+    - name: create user groups
+      ansible.builtin.group:
+        name: grupo4
+        state: present
+
+    - name: create users 
+      ansible.builtin.user:
+        name: "{{ item.user }}"
+        comment: "{{ item.comment }}"
+        shell: /bin/bash
+        password: $6$0NscrmWa9vhhulq5$Z6WT1hLCmspcBMWwMKjbrpQoKEcdbkCZHsshoETtDzXIIP0Lx5OTor049idtEDScaiC8m8FZxL3XTWWuhP1ds1
+        groups: "{{ item.groups }}"
+        append: yes
+      loop:
+      -  {user: lcerda, comment: Luis Cerda, groups: grupo4 } 
+      -  {user: mpoblete, comment: Marcelo Poblete, groups: grupo4 } 
+      -  {user: cvalencia, comment: Cristobal Valencia, groups: grupo4 } 
+      -  {user: hugarte, comment: Hernan Ugarte, groups: grupo4 } 
+      -  {user: bcontador, comment: Brenda Contador, groups: grupo4 } 
